@@ -59,42 +59,8 @@ write.csv(percent_changes_schools_2019_2025,"intermediary/percent_changes_school
 
 percent_changes_districts_19_22_25 <- read.csv("intermediary/percent_changes_districts_19_22_25.csv")
 
-# joining in enrollment, FRP, and % white
-s_enroll25 <- read.csv("data/enrollment/school_enrollment_2025.csv", skip=1)
-s_enroll19 <- read.csv("data/enrollment/school_enrollment_2019.csv", skip=1)
-d_enroll25 <- read.csv("data/enrollment/district_enrollment_2025.csv", skip=1)
-d_enroll22 <- read.csv("data/enrollment/district_enrollment_2022.csv", skip=1)
-d_enroll19 <- read.csv("data/enrollment/district_enrollment_2019.csv", skip=1)
 
-process_d_enroll <- function(dat){
-  dat <- dat %>% 
-    filter(Grade == "All Grades") %>%
-    mutate(year = substr(Data.Year,4,5)) %>%
-    select(year, District.Number, District.Type, District.Name,
-           Total.Enrollment, Total.White.Percent, Total.Students.Eligible.for.Free.or.Reduced.Priced.Meals.Percent) 
-  
-  oldnames <- c("District.Name",
-               "Total.Enrollment", "Total.White.Percent", "Total.Students.Eligible.for.Free.or.Reduced.Priced.Meals.Percent")
-  newnames <- sapply(c("name", "enrollment", "perc_white", "perc_frp"), function(x) paste(x, dat$year[[1]], sep=""))
-  
-  dat <- dat %>% 
-    select(-year) %>%
-    rename_with(~ newnames[which(oldnames == .x)], .cols = oldnames)
-  
-  return(dat)
-}
-
-d_enroll25 <- process_d_enroll(d_enroll25)
-d_enroll22 <- process_d_enroll(d_enroll22)
-d_enroll19 <- process_d_enroll(d_enroll19)
 head(d_enroll19)
-
-percent_changes_districts_19_22_25 <- left_join(percent_changes_districts_19_22_25,
-                                                d_enroll19, by = c("District.Number","District.Type"))
-percent_changes_districts_19_22_25 <- left_join(percent_changes_districts_19_22_25,
-                                                d_enroll22, by = c("District.Number","District.Type"))
-percent_changes_districts_19_22_25 <- left_join(percent_changes_districts_19_22_25,
-                                                d_enroll25, by = c("District.Number","District.Type"))
 
 
 colnames(percent_changes_districts_19_22_25)
