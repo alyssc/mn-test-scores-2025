@@ -134,8 +134,6 @@ write.csv(nstar_districts_19_22_25,"intermediary/northstar/districts_19_22_25.cs
 
 
 
-
-
 ####### Processing MCA/MTAS files
 process_mca <- function(dat){
   dat <- dat %>%
@@ -208,8 +206,16 @@ mca_districts_19_22_25 <- left_join(mca_districts_19_22_25,
 mca_districts_19_22_25 <- left_join(mca_districts_19_22_25,
                                       d_enroll25, by = c("District.Number","District.Type"))
 
-
 write.csv(mca_districts_19_22_25,"intermediary/mca/districts_19_22_25.csv", row.names=F)
 
 
+temp <- read.csv("intermediary/mca/temp_table.csv")
+colnames(temp)
+
+improved_enroll <- temp %>% filter(filter_helper > 0) %>%
+  summarise(total_enroll = sum(enrollment25))
+
+total_enroll <- temp %>%
+  summarise(total_enroll = sum(enrollment25))
+improved_enroll/total_enroll
 
